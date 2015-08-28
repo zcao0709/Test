@@ -67,21 +67,26 @@ public class FindMedianUpd {
 			tree.add(e);
 			return;
 		} else {
+			boolean existed = false;
 			Elem elem = tree.ceiling(e);
-			if (elem != null && elem.equals(e))
+			if (elem != null && elem.equals(e)) {
 				e = elem;
-			
+				existed = true;
+				e.num++;
+			}
 			if (e.val > mid.val) {
 				balance++;
 				bigger++;
-				tree.add(e);
+				if (!existed)
+					tree.add(e);
 			} else if (e.val < mid.val) {
 				balance--;
 				smaller++;
-				tree.add(e);
+				if (!existed)
+					tree.add(e);
 			} else {
 				balance++;
-				mid.num++;
+				//mid.num++;
 			}
 		}
 		makeBalance();	
