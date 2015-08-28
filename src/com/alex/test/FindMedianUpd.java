@@ -47,6 +47,7 @@ public class FindMedianUpd {
 	
 	public int size() {
 		if (tree.size() == 0)
+			
 			return 0;
 		return smaller + bigger + mid.num;
 	}
