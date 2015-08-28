@@ -7,14 +7,12 @@ public class MedianTree {
 
     private TreeSet<Elem> tree;
     private Elem mid;
-    private int balance;
     private int smaller;
     private int bigger;
 
     public MedianTree() {
         tree = new TreeSet<>();
         mid = null;
-        balance = 0;
         smaller = 0;
         bigger = 0;
     }
@@ -76,14 +74,9 @@ public class MedianTree {
             	tree.add(e);
             }
             if (e.val > mid.val) {
-                balance++;
                 bigger++;
             } else if (e.val < mid.val) {
-                balance--;
                 smaller++;
-            } else {
-                balance++;
-                //mid.num++;
             }
         }
         makeBalance();   
@@ -144,13 +137,9 @@ public class MedianTree {
         } else
         	return false;
         if (e.val > mid.val) {
-            balance--;
             bigger--;
         } else if (e.val < mid.val) {
-            balance++;
             smaller--;
-        } else {
-            balance--;
         }
         makeBalance();
         return true;
