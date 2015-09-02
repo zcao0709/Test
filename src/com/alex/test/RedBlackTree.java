@@ -4,16 +4,11 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
 
-public class BinSearchTree {
+public class RedBlackTree {
 
 	private Node root;
-
-	public BinSearchTree(int[] data) {
-		root = new Node(data[0]);
-		makeTree(root, data, 0);
-	}
 	
-	public BinSearchTree() {
+	public RedBlackTree() {
 		root = null;
 	}
 
@@ -23,7 +18,9 @@ public class BinSearchTree {
 			return;
 		}
 		//preorder(root);
+		System.out.println("BH: " + blackHeight(root));
 		printTree(root, height(root));
+		System.out.println();
 	}
 
 	private void printTree(Node n, int h) {
@@ -48,7 +45,7 @@ public class BinSearchTree {
 					ns.offer(DUMMY);
 					ns.offer(DUMMY);
 				} else {
-					printVal(node.val, unit);
+					printNode(node, unit);
 					if (node.left == null)
 						ns.offer(DUMMY);
 					else
@@ -70,8 +67,8 @@ public class BinSearchTree {
 			System.out.print(" ");
 	}
 	
-	private void printVal(int val, int unit) {
-		int len = String.valueOf(val).length();
+	private void printNode(Node n, int unit) {
+		int len = n.toString().length();
 		int pre, post;
 		pre = post = (unit - len) / 2;
 		if ((len & 1) != 0) {
@@ -79,7 +76,7 @@ public class BinSearchTree {
 		}
 		for (int i = 0; i < pre; i++)
 			System.out.print(" ");
-		System.out.print(val);
+		System.out.print(n);
 		for (int i = 0; i < post; i++)
 			System.out.print(" ");
 	}
@@ -100,6 +97,27 @@ public class BinSearchTree {
 		int right = height(n.right);
 		return 1 + (left > right ? left : right);
 	}
+	
+	private int blackHeight(Node n) {
+		if (n == null)
+			return 0;
+		int self = 1;
+		if (isRed(n))
+			self = 0;
+		int left = blackHeight(n.left);
+		int right = blackHeight(n.right);
+		if (left != right)
+			throw new IllegalArgumentException();
+		return self + left;
+	}
+	
+	/*public void chgColor(int val) {
+		Node n = find(val);
+		if (n.color == Color.BLACK)
+			n.color  = Color.RED;
+		else
+			n.color  = Color.BLACK;
+	}*/
 	
 	private void inorder(Node node) {
 		if (node == null)
@@ -163,19 +181,27 @@ public class BinSearchTree {
 		return node == root;
 	}
 
+	private boolean isBlack(Node node) {
+		return (node == null || node.color == Color.BLACK);
+	}
+	
+	private boolean isRed(Node node) {
+		return !isBlack(node);
+	}
+	
 	public void insert(int val) {
 		insert(new Node(val));
 	}
 	
 	private void insert(Node n) {
 		Node p = null;
-		Node x = root;
-		while (x != null) {
-			p = x;
-			if (x.val > n.val)
-				x = x.left;
+		Node toInsert = root;
+		while (toInsert != null) {
+			p = toInsert;
+			if (toInsert.val > n.val)
+				toInsert = toInsert.left;
 			else
-				x = x.right;
+				toInsert = toInsert.right;
 		}
 		n.parent = p;
 		if (p == null) {
@@ -186,10 +212,52 @@ public class BinSearchTree {
 			else
 				p.right = n;
 		}
+		n.color = Color.RED;
+		fixInsert(n);
+	}
+	
+	private void fixInsert(Node n) {
+		while (isRed(n.parent)) {
+			Node grand = n.parent.parent;
+			if (n.parent == grand.left) {
+				Node uncle = grand.right;
+				if (isRed(uncle)) {
+					n.parent.color = Color.BLACK;
+					uncle.color = Color.BLACK;
+					grand.color = Color.RED;
+					n = grand;
+				} else {
+					if (n == n.parent.right) {
+						leftRotate(n.parent);
+						n = n.left;
+					}
+					n.parent.color = Color.BLACK;
+					grand.color = Color.RED;
+					rightRotate(grand);
+				}
+			} else {
+				Node uncle = grand.left;
+				if (isRed(uncle)) {
+					n.parent.color = Color.BLACK;
+					uncle.color = Color.BLACK;
+					grand.color = Color.RED;
+					n = grand;
+				} else {
+					if (n == n.parent.left) {
+						rightRotate(n.parent);
+						n = n.right;
+					}
+					n.parent.color = Color.BLACK;
+					grand.color = Color.RED;
+					leftRotate(grand);
+				}
+			}
+		}
+		root.color = Color.BLACK;
 	}
 	
 	public boolean delete(int val) {
-		Node n = search(val);
+		Node n = find(val);
 		if (n == null)
 			return false;
 		delete(n);
@@ -197,34 +265,147 @@ public class BinSearchTree {
 	}
 	
 	private void delete(Node n) {
-		Node x;
+		Node toDelete;
 		if (n.left == null || n.right == null) {
-			x = n;
+			toDelete = n;
 		} else {
-			x = higher(n);
+			toDelete = higher(n);
 		}
-		Node child = (x.left == null) ? x.right : x.left;
+		Node parent = toDelete.parent;
+		Node child = (toDelete.left == null) ? toDelete.right : toDelete.left;
 		if (child != null) {
-			child.parent = x.parent;
+			child.parent = parent;
 		}
-		if (x.parent == null) {
+		if (parent == null) {
 			root = child;
 		} else {
-			if (x == x.parent.left)
-				x.parent.left = child;
+			if (toDelete == parent.left)
+				parent.left = child;
 			else
-				x.parent.right = child;
+				parent.right = child;
 		}
-		
-		if (x != n) {
-			n.val = x.val;
+		if (toDelete != n) {
+			n.val = toDelete.val;
 		}
-		x.parent = null;
-		x.left = null;
-		x.right = null;
+		toDelete.parent = null;
+		toDelete.left = null;
+		toDelete.right = null;
+		if (isBlack(toDelete))
+				fixDelete(parent, child);
 	}
 	
-	private Node search(int val) {
+	private void fixDelete(Node p, Node n) {
+		while (n != root && isBlack(n)) {
+			if (n == p.left) {
+				Node sibling = p.right;
+				if (isRed(sibling)) {
+					sibling.color = Color.BLACK;
+					p.color = Color.RED;
+					leftRotate(p);
+					sibling = p.right;
+				}
+				if (isBlack(sibling.left) && isBlack(sibling.right)) {
+					sibling.color = Color.RED;
+					n = p;
+					if (p != null)
+						p = p.parent;
+				} else {
+					if (isBlack(sibling.right)) {
+						sibling.left.color = Color.BLACK;
+						sibling.color = Color.RED;
+						rightRotate(sibling);
+						sibling = p.right;
+					}
+					sibling.color = p.color;
+					p.color = Color.BLACK;
+					sibling.right.color = Color.BLACK;
+					leftRotate(p);
+					n = root;
+				}
+			} else {
+				Node sibling = p.left;
+				if (isRed(sibling)) {
+					sibling.color = Color.BLACK;
+					p.color = Color.RED;
+					rightRotate(p);
+					sibling = p.left;
+				}
+				if (isBlack(p.left) && isBlack(p.right)) {
+					sibling.color = Color.RED;
+					n = p;
+					if (p != null)
+						p = p.parent;
+				} else {
+					if (isBlack(sibling.left)) {
+						sibling.right.color = Color.BLACK;
+						sibling.color = Color.RED;
+						leftRotate(sibling);
+						sibling = p.left;
+					}
+					sibling.color = p.color;
+					p.color = Color.BLACK;
+					sibling.left.color = Color.BLACK;
+					rightRotate(p);
+					n = root;
+				}
+			}
+		}
+		n.color = Color.BLACK;
+	}
+	
+	private void leftRotate(Node radix) {
+		Node right = radix.right;
+		radix.right = right.left;
+		if (right.left != null)
+			right.left.parent = radix;
+		
+		right.parent = radix.parent;
+		if (right.parent == null)
+			root = right;
+		else {
+			if (right.parent.val > right.val)
+				right.parent.left = right;
+			else
+				right.parent.right = right;
+		}
+		right.left = radix;
+		radix.parent = right;
+	}
+	
+	private void rightRotate(Node radix) {
+		Node left = radix.left;
+		radix.left = left.right;
+		if (left.right != null)
+			left.right.parent = radix;
+		
+		left.parent = radix.parent;
+		if (left.parent == null)
+			root = left;
+		else {
+			if (left.parent.val > left.val)
+				left.parent.left = left;
+			else
+				left.parent.right = left;
+		}
+		
+		left.right = radix;
+		radix.parent = left;
+	}
+	
+	public boolean search(int val) {
+		Node x = root;
+		while (x != null) {
+			if (x.val == val)
+				return true;
+			if (x.val > val)
+				x = x.left;
+			else
+				x = x.right;
+		}
+		return false;
+	}
+	
+	private Node find(int val) {
 		Node x = root;
 		while (x != null) {
 			if (x.val == val)
@@ -339,28 +520,28 @@ public class BinSearchTree {
 		return p;
 	}
 
-	private void makeTree(Node parent, int[] data, int index) {
-		int left = index * 2 + 1;
-		if (left < data.length && data[left] != 0) {
-			Node node = new Node(data[left]);
-			parent.left = node;
-			node.parent = parent;
-			makeTree(node, data, left);
+	private static enum Color {
+		RED("r"), BLACK("b");
+		
+		private String color;
+		
+		private Color(String c) {
+			color = c;
 		}
-		int right = index * 2 + 2;
-		if (right < data.length && data[right] != 0) {
-			Node node = new Node(data[right]);
-			parent.right = node;
-			node.parent = parent;
-			makeTree(node, data, right);
+		
+		@Override
+		public String toString() {
+			return color;
 		}
 	}
-
+	
 	private static class Node {
 		private int val;
 		private Node left;
 		private Node right;
 		private Node parent;
+		private Color color;
+		private int bh;
 		private int layer;
 		private static final int INVALID = -1;
 		
@@ -369,6 +550,8 @@ public class BinSearchTree {
 			this.left = left;
 			this.right = right;
 			this.parent = parent;
+			this.color = Color.BLACK;
+			this.bh = 0;
 			this.layer = 0;
 		}
 
@@ -378,34 +561,33 @@ public class BinSearchTree {
 		
 		@Override
 		public String toString() {
-			return String.valueOf(val);
+			return val + color.toString();
 		}
 	}
 
+	//9
+	//11 2 14 1 15 7 5 8 4
 	public static void main(String[] args) {
 
 		try (Scanner sc = new Scanner(System.in)) {
 			int size = sc.nextInt();
-			BinSearchTree bst = new BinSearchTree();
+			RedBlackTree rbt = new RedBlackTree();
 			for (int i = 0; i < size; i++) {
-				bst.insert(sc.nextInt());
-				bst.printTree();
-				System.out.println();
+				rbt.insert(sc.nextInt());
+				rbt.printTree();
 			}
-			/*bst.delete(5);
-			bst.printTree();*/
-			bst.delete(4);
-			bst.printTree();
+			rbt.delete(2);
+			rbt.printTree();
+			/*rbt.delete(4);
+			rbt.printTree();*/
 			
-			System.out.println(bst.first());
-			System.out.println(bst.last());
-			System.out.println(bst.lower(6));
-			System.out.println(bst.lower(9));
-			System.out.println(bst.higher(9));
-			System.out.println(bst.higher(4));
-			bst.printTree();
-
-
+			System.out.println(rbt.first());
+			System.out.println(rbt.last());
+			System.out.println(rbt.lower(6));
+			System.out.println(rbt.lower(9));
+			System.out.println(rbt.higher(9));
+			System.out.println(rbt.higher(4));
+			rbt.printTree();
 		}
 	}
 }
