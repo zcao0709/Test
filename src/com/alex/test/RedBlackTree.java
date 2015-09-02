@@ -200,8 +200,10 @@ public class RedBlackTree {
 			p = toInsert;
 			if (toInsert.val > n.val)
 				toInsert = toInsert.left;
-			else
+			else if (toInsert.val < n.val)
 				toInsert = toInsert.right;
+			else
+				return;
 		}
 		n.parent = p;
 		if (p == null) {
