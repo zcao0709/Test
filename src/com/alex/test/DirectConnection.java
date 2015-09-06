@@ -11,20 +11,25 @@ public class DirectConnection {
 	private static final long MODULE = 1000000007;
 	
 	public static void calc(Queue<City> cities) {
-		long distsum = 0;
+		long sum = 0;
 		while (cities.size() > 1) {
 			City c = cities.poll();
+			//System.out.println(c);
+			long distsum = 0;
+			int numCityOnRight = 0;
 			for (City other : cities) {
-				sum += calc(c, other);
+				if (other.dist > c.dist) {
+					numCityOnRight++;
+					distsum += other.dist;
+				} else {
+					numCityOnRight--;
+					distsum -= other.dist;
+				}
 			}
+			distsum += (long)c.dist * -numCityOnRight;
+			sum += (c.pop * distsum) % MODULE;
 		}
 		System.out.println(sum % MODULE);
-	}	
-	
-	private static long calc(City c, City other) {
-		long dist = Math.abs(c.dist - other.dist);
-		int pop = c.pop > other.pop ? c.pop : other.pop;
-		return dist * pop;
 	}
 	
 	private static class City implements Comparable<City> {
@@ -41,7 +46,7 @@ public class DirectConnection {
 		}
 		@Override
 		public int compareTo(City c) {
-			return pop - c.pop;
+			return c.pop - pop;
 		}
 		@Override
 		public String toString() {
@@ -61,7 +66,8 @@ public class DirectConnection {
 				cities.get(j).setPop(sc.nextInt());
 			//System.out.println(cities);
 			Queue<City> cs = new PriorityQueue<>(cities);
-			calc(cities);
+			calc(cs);
 		}
+		sc.close();
 	}
 }
