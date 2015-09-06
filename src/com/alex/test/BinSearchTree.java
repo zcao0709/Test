@@ -24,6 +24,7 @@ public class BinSearchTree {
 		}
 		//preorder(root);
 		printTree(root, height(root));
+		System.out.println();
 	}
 
 	private void printTree(Node n, int h) {
@@ -48,7 +49,7 @@ public class BinSearchTree {
 					ns.offer(DUMMY);
 					ns.offer(DUMMY);
 				} else {
-					printVal(node.val, unit);
+					printNode(node, unit);
 					if (node.left == null)
 						ns.offer(DUMMY);
 					else
@@ -70,8 +71,8 @@ public class BinSearchTree {
 			System.out.print(" ");
 	}
 	
-	private void printVal(int val, int unit) {
-		int len = String.valueOf(val).length();
+	private void printNode(Node n, int unit) {
+		int len = n.toString().length();
 		int pre, post;
 		pre = post = (unit - len) / 2;
 		if ((len & 1) != 0) {
@@ -79,7 +80,7 @@ public class BinSearchTree {
 		}
 		for (int i = 0; i < pre; i++)
 			System.out.print(" ");
-		System.out.print(val);
+		System.out.print(n);
 		for (int i = 0; i < post; i++)
 			System.out.print(" ");
 	}
@@ -404,8 +405,6 @@ public class BinSearchTree {
 			System.out.println(bst.higher(9));
 			System.out.println(bst.higher(4));
 			bst.printTree();
-
-
 		}
 	}
 }
