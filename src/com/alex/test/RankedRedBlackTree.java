@@ -399,8 +399,29 @@ public class RankedRedBlackTree {
 		radix.size = size(radix.left) + size(radix.right) + 1;
 	}
 	
+	public int size() {
+		return size(root);
+	}
+	
 	private int size(Node n) {
 		return n == null ? 0 : n.size;
+	}
+	
+	public int rank(int val) {
+		int rank = 1;
+		Node x = root;
+		while (x != null) {
+			if (x.val == val) {
+				return rank + size(x.left);
+			}
+			if (x.val > val) {
+				x = x.left;
+			} else {
+				rank += size(x.left) + 1;
+				x = x.right;
+			}
+		}
+		return 0;
 	}
 	
 	public boolean search(int val) {
@@ -587,9 +608,12 @@ public class RankedRedBlackTree {
 				rbt.insert(sc.nextInt());
 				rbt.printTree();
 			}
-			rbt.delete(7);
+			System.out.println(rbt.rank(1));
+			System.out.println(rbt.rank(7));
+			System.out.println(rbt.rank(11));
+			/*rbt.delete(7);
 			rbt.printTree();
-			/*rbt.delete(4);
+			rbt.delete(4);
 			rbt.printTree();*/
 			
 			System.out.println(rbt.first());
