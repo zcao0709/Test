@@ -69,6 +69,34 @@ public class MergeSort {
 		return;
 	}
 	
+	public static void sort(int[] a) {
+		sort(a, 0, a.length-1);
+	}
+	
+	private static void sort(int[] a, int left, int right) {
+		if (left < right) {
+			int mid = (left + right) / 2;
+			sort(a, left, mid);
+			sort(a, mid+1, right);
+			merge(a, left, mid, right);
+		}
+	}
+	
+	private static void merge(int[] a, int left, int mid, int right) {
+		int[] lHalf = new int[mid - left + 1];
+		int[] rHalf = new int[right - mid];
+		for (int i = left; i <= mid; i++)
+			lHalf[i-left] = a[i];
+		for (int i = mid+1; i <= right; i++)
+			rHalf[i-mid-1] = a[i];
+		
+		int i = 0;
+		int j = 0;
+		for (int k = left; k <= right; k++) {
+			if (lHalf[i])
+		}
+	}
+	
 	public static void main(String[] args) {
 		int size = 10;
 		try (Scanner scan = new Scanner(System.in)) {
