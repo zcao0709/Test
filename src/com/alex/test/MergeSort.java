@@ -1,6 +1,7 @@
 package com.alex.test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -83,17 +84,27 @@ public class MergeSort {
 	}
 	
 	private static void merge(int[] a, int left, int mid, int right) {
-		int[] lHalf = new int[mid - left + 1];
-		int[] rHalf = new int[right - mid];
+		int[] lhalf = new int[mid - left + 2];
+		int[] rhalf = new int[right - mid + 1];
 		for (int i = left; i <= mid; i++)
-			lHalf[i-left] = a[i];
+			lhalf[i-left] = a[i];
 		for (int i = mid+1; i <= right; i++)
-			rHalf[i-mid-1] = a[i];
-		
+			rhalf[i-mid-1] = a[i];
+		lhalf[lhalf.length-1] = Integer.MAX_VALUE;
+		rhalf[rhalf.length-1] = Integer.MAX_VALUE;
 		int i = 0;
 		int j = 0;
-		for (int k = left; k <= right; k++) {
-			if (lHalf[i])
+		int k = left;
+		for (; k <= right; k++) {
+			if (lhalf[i] <= rhalf[j]) {
+				a[k] = lhalf[i++];
+				if (i >= lhalf.length)
+					break;
+			} else {
+				a[k] = rhalf[j++];
+				if (j >= rhalf.length)
+					break;
+			}
 		}
 	}
 	
@@ -102,8 +113,15 @@ public class MergeSort {
 		try (Scanner scan = new Scanner(System.in)) {
 			size = scan.nextInt();
 		}
-		
-		List<Integer> list = new ArrayList<>(size);
+		int[] a = new int[size];
+		Random rand = new Random();
+		for (int i = 0; i < size; i++) {
+			a[i] = rand.nextInt(size*3);
+		}
+		System.out.println(Arrays.toString(a));
+		sort(a);
+		System.out.println(Arrays.toString(a));
+		/*List<Integer> list = new ArrayList<>(size);
 		
 		Random rand = new Random();
 		for (int i = 0; i < size; i++) {
@@ -111,9 +129,6 @@ public class MergeSort {
 		}
 		System.out.println(list);
 		sort(list);
-		System.out.println(list);
-		/*for (Integer i : list) {
-			System.out.println(i);
-		}*/
+		System.out.println(list);*/
 	}
 }
