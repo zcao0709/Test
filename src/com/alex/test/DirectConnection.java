@@ -1,7 +1,6 @@
 package com.alex.test;
 
 import java.util.Scanner;
-import java.util.TreeSet;
 import java.util.List;
 import java.util.Queue;
 import java.util.ArrayList;
