@@ -139,5 +139,4 @@ public class AssemblyLineFastestWay {
 		System.out.println(fastest.findFastestTime());
 		System.out.println(Arrays.toString(fastest.findFastestWay()));
 	}
-
 }
