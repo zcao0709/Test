@@ -1,6 +1,7 @@
 package com.alex.test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -47,29 +48,71 @@ public class QuickSort {
 		return min;
 	}
 	
+	public static void sort(int[] a) {
+		sort(a, 0, a.length-1);
+	}
+	
+	private static void sort(int[] a, int left, int right) {
+		if (left < right) {
+			int p = triplePartition(a, left, right);
+			//int p = randomPartition(a, left, right);
+			sort(a, left, p-1);
+			sort(a, p+1, right);
+		}
+	}
+	
+	private static int partition(int[] a, int left, int right) {
+		int key = a[right];
+		System.out.println("KEY: " + key);
+		int i = left - 1;
+		for (int j = left; j < right; j++) {
+			if (a[j] < key) {
+				i++;
+				exchange(a, i, j);
+			}
+		}
+		exchange(a, i+1, right);
+		return i + 1;
+	}
+	
+	private static int randomPartition(int[] a, int left, int right) {
+		Random rand = new Random();
+		int p = rand.nextInt(right - left + 1) + left;
+		exchange(a, p, right);
+		return partition(a, left, right);
+	}
+	
+	private static int triplePartition(int[] a, int left, int right) {
+		int[] p = new int[3];
+		Random rand = new Random();
+		p[0] = rand.nextInt(right - left + 1);
+		p[1] = rand.nextInt(right - left + 1);
+		p[2] = rand.nextInt(right - left + 1);
+		InsertSort.sort(p);
+		exchange(a, p[1]+left, right);
+		return partition(a, left, right);
+	}
+	
+	private static void exchange(int[] a, int i, int j) {
+		if (i == j)
+			return;
+		int temp = a[i];
+		a[i] = a[j];
+		a[j] = temp;
+	}
+	
 	public static void main(String[] args) {
-		int size;
-		List<Integer> list = new ArrayList<>();
+		int size = 10;
 		try (Scanner scan = new Scanner(System.in)) {
 			size = scan.nextInt();
-			for (int i = 0; i < size; i++) {
-				if (scan.hasNextInt())
-					list.add(scan.nextInt());
-				else
-					break;
-			}
 		}
-		if (list.size() == 0) {
-			Random rand = new Random();
-			for (int i = 0; i < size; i++) {
-				list.add(rand.nextInt(size*3));
-			}
+		int[] a = new int[size];
+		Random rand = new Random();
+		for (int i = 0; i < size; i++) {
+			a[i] = rand.nextInt(size*3);
 		}
-		System.out.println(list);
-		sort(list);
-		System.out.println(list);
-		/*for (Integer i : list) {
-			System.out.println(i);
-		}*/
+		System.out.println(Arrays.toString(a));
+		sort(a);
+		System.out.println(Arrays.toString(a));
 	}
 }

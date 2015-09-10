@@ -71,7 +71,9 @@ public class MergeSort {
 	}
 	
 	public static void sort(int[] a) {
-		sort(a, 0, a.length-1);
+		//sort(a, 0, a.length-1);
+		int[] aux = a.clone();
+		sort(aux, a, 0, a.length-1);
 	}
 	
 	private static void sort(int[] a, int left, int right) {
@@ -105,6 +107,25 @@ public class MergeSort {
 				if (j >= rhalf.length)
 					break;
 			}
+		}
+	}
+	
+	private static void sort(int[] src, int[] dest, int left, int right) {
+		if (left >= right)
+			return;
+		int mid = (left + right) >>> 1;
+		sort(dest, src, left, mid);
+		sort(dest, src, mid+1, right);
+		
+		if (src[mid] <= src[mid+1]) {
+			System.arraycopy(src, left, dest, left, right-left+1);
+			return;
+		}
+		for (int i = left, p = left, q = mid + 1; i <= right; i++) {
+			if (q > right || (p <= mid && src[p] <= src[q]))
+				dest[i] = src[p++];
+			else
+				dest[i] = src[q++];
 		}
 	}
 	

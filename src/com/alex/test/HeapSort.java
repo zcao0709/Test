@@ -1,8 +1,6 @@
 package com.alex.test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -18,18 +16,18 @@ public class HeapSort {
 		for (int i = a.length-1, size = a.length; i > 0; i--) {
 			exch(a, i, 0);
 			size--;
-			heapify(a, 0, size);
+			maxHeapify(a, 0, size);
 			System.out.println(Arrays.toString(a) + size);
 		}
 	}
 	
 	private static void buildMaxHeap(int[] a) {
 		for (int i = a.length/2 - 1; i >= 0; i--) {
-			heapify(a, i, a.length);
+			maxHeapify(a, i, a.length);
 		}
 	}
 	
-	private static void heapify(int[] a, int i, int size) {
+	private static void maxHeapify(int[] a, int i, int size) {
 		int left = 2 * i + 1;
 		int right = 2 * i + 2;
 		int max = i;
@@ -41,7 +39,7 @@ public class HeapSort {
 		}
 		if (max != i) {
 			exch(a, max, i);
-			heapify(a, max, size);
+			maxHeapify(a, max, size);
 		}
 	}
 	
@@ -66,7 +64,5 @@ public class HeapSort {
 		System.out.println(Arrays.toString(a));
 		sort(a);
 		System.out.println(Arrays.toString(a));
-
 	}
-
 }
