@@ -79,9 +79,9 @@ public class MatrixChainMultiplication {
 		public int hashCode() {
 			return Objects.hash(x, y);
 		}
-		@Override
+		@Override 
 		public String toString() {
-			return x + ":" + y + ":";
+			return x + ":" + y;
 		}
 	}
 
