@@ -54,8 +54,7 @@ public class QuickSort {
 	
 	private static void sort(int[] a, int left, int right) {
 		if (left < right) {
-			int p = triplePartition(a, left, right);
-			//int p = randomPartition(a, left, right);
+			int p = randomPartition(a, left, right);
 			sort(a, left, p-1);
 			sort(a, p+1, right);
 		}
@@ -63,7 +62,6 @@ public class QuickSort {
 	
 	private static int partition(int[] a, int left, int right) {
 		int key = a[right];
-		System.out.println("KEY: " + key);
 		int i = left - 1;
 		for (int j = left; j < right; j++) {
 			if (a[j] < key) {
@@ -75,7 +73,8 @@ public class QuickSort {
 		return i + 1;
 	}
 	
-	private static int randomPartition(int[] a, int left, int right) {
+	// package wise
+	static int randomPartition(int[] a, int left, int right) {
 		Random rand = new Random();
 		int p = rand.nextInt(right - left + 1) + left;
 		exchange(a, p, right);
@@ -93,6 +92,31 @@ public class QuickSort {
 		return partition(a, left, right);
 	}
 	
+	// not correct
+	private static int hoarePartition(int[] a, int left, int right) {
+		for (int k = left; k <= right; k++)
+			System.out.print(a[k] + " ");
+		System.out.println();
+		int key = a[left];
+		int i = left - 1;
+		int j = right + 1;
+		while (true) {
+			while (a[--j] > key)
+				;
+			while (a[++i] < key)
+				;
+			if (i < j)
+				exchange(a, i, j);
+			else {
+				System.out.println("PAR: " + j);
+				for (int k = left; k <= right; k++)
+					System.out.print(a[k] + " ");
+				System.out.println();
+				return j;
+			}
+		}
+	}
+	
 	private static void exchange(int[] a, int i, int j) {
 		if (i == j)
 			return;
@@ -105,6 +129,13 @@ public class QuickSort {
 		int size = 10;
 		try (Scanner scan = new Scanner(System.in)) {
 			size = scan.nextInt();
+			/*int[] a = new int[size];
+			for (int i = 0; i < size; i++) {
+				a[i] = scan.nextInt();
+			}
+			System.out.println(Arrays.toString(a));
+			sort(a);
+			System.out.println(Arrays.toString(a));*/
 		}
 		int[] a = new int[size];
 		Random rand = new Random();
