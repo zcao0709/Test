@@ -54,7 +54,7 @@ public class QuickSort {
 	
 	private static void sort(int[] a, int left, int right) {
 		if (left < right) {
-			int p = randomPartition(a, left, right);
+			int p = triplePartition(a, left, right);
 			sort(a, left, p-1);
 			sort(a, p+1, right);
 		}
@@ -92,26 +92,25 @@ public class QuickSort {
 		return partition(a, left, right);
 	}
 	
-	// not correct
+	/* 
+	 * hoarePartition is different with other partitions in
+	 * hoarePartition doesn't put the pivot (a[left]) in the final place.
+	 * So we should sort(a, left, j) and sort(a, j+1, right) then.
+	 */
 	private static int hoarePartition(int[] a, int left, int right) {
-		for (int k = left; k <= right; k++)
-			System.out.print(a[k] + " ");
-		System.out.println();
 		int key = a[left];
 		int i = left - 1;
 		int j = right + 1;
 		while (true) {
-			while (a[--j] > key)
-				;
-			while (a[++i] < key)
-				;
+			do {
+				--j;
+			} while (a[j] > key);
+			do {
+				++i;
+			} while (a[i] < key);
 			if (i < j)
 				exchange(a, i, j);
 			else {
-				System.out.println("PAR: " + j);
-				for (int k = left; k <= right; k++)
-					System.out.print(a[k] + " ");
-				System.out.println();
 				return j;
 			}
 		}
