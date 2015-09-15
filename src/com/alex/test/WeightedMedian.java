@@ -8,7 +8,22 @@ import java.util.Scanner;
 
 public class WeightedMedian {
 	
+	private static int medianOfMedianPartition(List<Point> ps, int left, int right) {
+		List<Point> aux = new ArrayList<>(ps.size() / 5 + 1);
+		for (int i = left; i <= right; i += 5) {
+			int end = i + 4 > right ? right : i + 4;
+			InsertSort.sort(ps, i, end);
+			aux.add(ps.get((i+end)>>>1));
+		}
+		if (aux.size() == 1)
+			return aux.get(0).x;
+		return medianOfMedianPartition(aux, 0, aux.size()-1);
+	}
+	
 	private static int partition(List<Point> ps, int left, int right) {
+		int p = medianOfMedianPartition(ps, left, right);
+		System.out.println("P: " + p);
+		Collections.swap(ps, right, p);
 		Point key = ps.get(right);
 		int i = left - 1;
 		for (int j = left; j < right; j++) {
