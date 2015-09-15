@@ -10,13 +10,25 @@ public class InsertSort {
 
 	public static <T extends Comparable<? super T>> void sort(List<T> list) {
 		for (int i = 1; i < list.size(); i++) {
-			for (int j = i-1; j >= 0; j--) {
-				if (list.get(j+1).compareTo(list.get(j)) < 0) {
-					Collections.swap(list, j+1, j);
-				} else {
-					break;
-				}
+			T key = list.get(i);
+			int j = i - 1;
+			while (j >= 0 && list.get(j).compareTo(key) > 0) {
+				Collections.swap(list, j+1, j);
+				j--;
 			}
+			list.set(j + 1, key);
+		}
+	}
+	
+	public static <T extends Comparable<? super T>> void sort(List<T> list, int left, int right) {
+		for (int i = left + 1; i <= right; i++) {
+			T key = list.get(i);
+			int j = i - 1;
+			while (j >= left && list.get(j).compareTo(key) > 0) {
+				Collections.swap(list, j+1, j);
+				j--;
+			}
+			list.set(j + 1, key);
 		}
 	}
 	

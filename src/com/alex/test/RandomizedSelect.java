@@ -29,14 +29,6 @@ public class RandomizedSelect {
 		int size = 10;
 		try (Scanner scan = new Scanner(System.in)) {
 			size = scan.nextInt();
-			/*int[] a = new int[size];
-			for (int i = 0; i < size; i++) {
-				a[i] = scan.nextInt();
-			}
-			System.out.println(Arrays.toString(a));
-			QuickSort.sort(a);
-			System.out.println(Arrays.toString(a));
-			System.out.println(secondGreatest(a));*/
 		}
 		int[] a = new int[size];
 		Random rand = new Random();
