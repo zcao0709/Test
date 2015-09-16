@@ -87,8 +87,7 @@ public class WeightedMedian {
 		for (Point p : ps)
 			w += p.w;
 		System.out.println("WEIGHT: " + w);
-		//double th = (double)w / 2;
-		double th = w / 2;
+		double th = (double)w / 2;
 		int p = weightedMedian(ps, th, 0, ps.size() - 1);
 		System.out.println(th + " " + ps.get(p));
 		
