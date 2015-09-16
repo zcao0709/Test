@@ -25,7 +25,7 @@ public class InsertSort {
 			T key = list.get(i);
 			int j = i - 1;
 			while (j >= left && list.get(j).compareTo(key) > 0) {
-				Collections.swap(list, j+1, j);
+				list.set(j+1, list.get(j));
 				j--;
 			}
 			list.set(j + 1, key);
