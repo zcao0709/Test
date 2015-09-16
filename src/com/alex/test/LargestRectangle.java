@@ -1,44 +1,78 @@
 package com.alex.test;
 
 import java.util.Scanner;
-import java.util.TreeMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
 public class LargestRectangle {
-
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-        int num = sc.nextInt();
-        TreeMap<Integer, Integer> builds = new TreeMap<>();
-        for (int i = 0; i < num; i++) {
-            Integer height = Integer.valueOf(sc.nextInt());
-            Integer broadth = builds.get(height);
-            if (broadth == null)
-                builds.put(height, Integer.valueOf(1));
+    
+    private static long increaseArea(long lastMax, List<Area> areas, int height) {
+        
+        ListIterator<Area> i = areas.listIterator();
+        int boardth = 0;
+        while (i.hasNext()) {
+            Area a = i.next();
+            if (a.h >= height)
+                boardth = a.b > boardth ? a.b : boardth;
             else
-                builds.put(height, Integer.valueOf(broadth + 1));
+                boardth = 0;
+            if (!a.fixed) {
+                if (a.h <= height)
+                    a.b++;
+                else
+                    a.fixed = true;
+            }
+            long area = a.area();
+            if (lastMax < area )
+                lastMax = area;
+            else {
+                if (a.fixed)
+                    i.remove();
+            }
         }
-        sc.close();
+        
+        Area a = new Area(height, boardth+1);
+        areas.add(a);
+        if (a.area() > lastMax)
+            return a.area();
+        else
+            return lastMax;
+    }
     
-        Map.Entry<Integer, Integer> highestBuilding = builds.lastEntry();
-        int highest = highestBuilding.getKey();
-        int broadth = highestBuilding.getValue();
-        long area = highest * broadth;
-        //System.out.println(builds);
-    
-        while(true) {
-            Map.Entry<Integer, Integer> b = builds.lowerEntry(highest);
-            if (b == null)
-               break;
-            highest = b.getKey();
-            broadth += b.getValue();
-            long na = highest * broadth;
-            //System.out.println(na);
-            if (na > area)
-                area = na;
+    private static class Area {
+        final int h;
+        int b;
+        boolean fixed;
+        
+        Area(int height, int boardth) {
+            h = height;
+            b = boardth;
+            fixed = false;
         }
-        System.out.println(area);
-        sc.close();
-	}
+        
+        long area() {
+            return (long)h * b;
+        }
+        
+        public String toString() {
+            return "[" + h + ", " + b + "]";
+        }
+    }
 
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int num = sc.nextInt();
+        
+        List<Area> areas = new LinkedList<>();
+        long maxArea = 0;
+        for (int i = 0; i < num; i++) {
+            int height = sc.nextInt();
+            
+            maxArea = increaseArea(maxArea, areas, height);
+            //System.out.println(maxArea + areas.toString());
+        }
+        System.out.println(maxArea);
+        sc.close();
+    }
 }
