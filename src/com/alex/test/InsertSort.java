@@ -32,6 +32,18 @@ public class InsertSort {
 		}
 	}
 	
+	public static <T> void sort(List<T> list, int left, int right, Comparator<T> comp) {
+		for (int i = left + 1; i <= right; i++) {
+			T key = list.get(i);
+			int j = i - 1;
+			while (j >= left && comp.compare(list.get(j), key) > 0) {
+				list.set(j+1, list.get(j));
+				j--;
+			}
+			list.set(j + 1, key);
+		}
+	}
+	
 	public static void sort(int[] a) {
 		for (int i = 1; i < a.length; i++) {
 			int key = a[i];

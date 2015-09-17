@@ -9,6 +9,7 @@ import java.util.Scanner;
 
 public class WeightedMedian {
 	
+	/* return the index of the partition element
 	private static int medianOfMedianPartition(List<Point> ps, int left, int right) {
 		int[] aux = new int[right-left+1];
 		for (int i = left, j = 0; i <= right; i++, j++) {
@@ -59,6 +60,42 @@ public class WeightedMedian {
 			if (ps.get(j).compareTo(key) <= 0) {
 				i++;
 				Collections.swap(ps, i, j);
+			}
+		}
+		Collections.swap(ps, right, i + 1);
+		//System.out.println("Partition" + (i+1) + ": " + ps.toString());
+		return i + 1;
+	}
+	*/
+	
+	private static Point medianOfMedianPartition(List<Point> ps, int left, int right) {
+		int len = ps.size() / 5 + 1;
+		List<Point> aux = new ArrayList<>(len);
+		for (int i = left; i <= right; i += 5) {
+			int end = i + 4 > right ? right : i + 4;
+			InsertSort.sort(ps, i, end);
+			aux.add(ps.get((i+end)>>>1));
+		}
+		if (aux.size() == 1)
+			return aux.get(0);
+		return medianOfMedianPartition(aux, 0, aux.size()-1);
+	}
+	
+	private static int partition(List<Point> ps, int left, int right) {
+		Point key = medianOfMedianPartition(ps, left, right);
+		//System.out.println("KEY: " + key);
+		int i = left - 1;
+		boolean foundKey = false;
+		for (int j = left; j < right; j++) {
+			if (ps.get(j).compareTo(key) < 0) {
+				i++;
+				Collections.swap(ps, i, j);
+			// when key is found first time, move it to rightmost
+			// so adapt to standard quick-sort partition.
+			} else if (ps.get(j).compareTo(key) == 0 && !foundKey) {
+				Collections.swap(ps, right, j);
+				foundKey = true;
+				j--;
 			}
 		}
 		Collections.swap(ps, right, i + 1);
