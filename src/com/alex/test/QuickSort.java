@@ -1,6 +1,5 @@
 package com.alex.test;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -54,7 +53,11 @@ public class QuickSort {
 	
 	private static void sort(int[] a, int left, int right) {
 		if (left < right) {
-			int p = triplePartition(a, left, right);
+			int p;
+			if (right - left > 3 * 3 - 1)
+				p = triplePartition(a, left, right);
+			else
+				p = partition(a, left, right);
 			sort(a, left, p-1);
 			sort(a, p+1, right);
 		}
@@ -62,6 +65,7 @@ public class QuickSort {
 	
 	private static int partition(int[] a, int left, int right) {
 		int key = a[right];
+		//System.out.println("KEY: " + key);
 		int i = left - 1;
 		for (int j = left; j < right; j++) {
 			if (a[j] < key) {
@@ -84,11 +88,25 @@ public class QuickSort {
 	private static int triplePartition(int[] a, int left, int right) {
 		int[] p = new int[3];
 		Random rand = new Random();
-		p[0] = rand.nextInt(right - left + 1);
-		p[1] = rand.nextInt(right - left + 1);
-		p[2] = rand.nextInt(right - left + 1);
-		InsertSort.sort(p);
-		exchange(a, p[1]+left, right);
+		p[0] = rand.nextInt(right - left + 1) + left;
+		p[1] = rand.nextInt(right - left + 1) + left;
+		p[2] = rand.nextInt(right - left + 1) + left;
+		System.out.println(Arrays.toString(p));
+		int mid = -1;
+		int min = p[0];
+		int max = p[0];
+		if (a[p[1]] >= a[p[0]])
+			max = p[1];
+		else
+			min = p[1];
+		if (a[p[2]] >= a[max])
+			mid = max;
+		else if (a[p[2]] <= a[min])
+			mid = min;
+		else
+			mid = p[2];
+		//InsertSort.sort(p);
+		exchange(a, mid, right);
 		return partition(a, left, right);
 	}
 	
