@@ -28,7 +28,7 @@ public class InversionCount {
 			} else {
 				if (p <= mid && src[p] > src[q]) {
 					ret += (mid-p+1);
-					System.out.println(src[p] + "," + src[q] + ":" + ret);
+					//System.out.println(src[p] + "," + src[q] + ":" + ret);
 				}
 				dest[i] = src[q++];
 			}
@@ -40,24 +40,22 @@ public class InversionCount {
 		int size = 10;
 		try (Scanner scan = new Scanner(System.in)) {
 			size = scan.nextInt();
+			int[] a = new int[size];
+			for (int i = 0; i < size; i++) {
+                a[i] = scan.nextInt();
+            }
+			//System.out.println(Arrays.toString(a));
+    		System.out.println(count(a));
+    		//System.out.println(Arrays.toString(a));
 		}
-		int[] a = new int[size];
+		/*int[] a = new int[size];
 		Random rand = new Random();
 		for (int i = 0; i < size; i++) {
 			a[i] = rand.nextInt(size*3);
 		}
 		System.out.println(Arrays.toString(a));
 		System.out.println(count(a));
-		System.out.println(Arrays.toString(a));
-		/*List<Integer> list = new ArrayList<>(size);
-		
-		Random rand = new Random();
-		for (int i = 0; i < size; i++) {
-			list.add(rand.nextInt(size*3));
-		}
-		System.out.println(list);
-		sort(list);
-		System.out.println(list);*/
+		System.out.println(Arrays.toString(a));*/
 	}
 
 }
