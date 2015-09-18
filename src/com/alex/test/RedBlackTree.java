@@ -119,6 +119,32 @@ public class RedBlackTree {
 			n.color  = Color.BLACK;
 	}*/
 	
+	public void traverse() {
+		traverse(root);
+	}
+	
+	private void traverse(Node node) {
+		Node prev = null;
+		StringBuilder sb = new StringBuilder();
+		
+		while (node != null) {
+			if (prev == node.parent) {
+				sb.append(node).append(" ");
+				prev = node;
+				node = node.left != null ? node.left
+						: (node.right != null ? node.right
+						: node.parent);
+			} else if (prev == node.left && node.right != null) {
+				prev = node;
+				node = node.right;
+			} else {
+				prev = node;
+				node = node.parent;
+			}
+		}
+		System.out.println(sb);
+	}
+	
 	private void inorder(Node node) {
 		if (node == null)
 			return;
@@ -582,6 +608,7 @@ public class RedBlackTree {
 			rbt.printTree();
 			/*rbt.delete(4);
 			rbt.printTree();*/
+			rbt.traverse();
 			
 			System.out.println(rbt.first());
 			System.out.println(rbt.last());
