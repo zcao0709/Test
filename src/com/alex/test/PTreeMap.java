@@ -20,16 +20,14 @@ public class PTreeMap<V> {
 			return;
 		}
 		System.out.println("SIZE: " + size);
-		printTree(root);
+		printTree(root, lastEntry().toString().length() + 2);
 		System.out.println();
 	}
 
-	private void printTree(Entry<V> e) {
+	private void printTree(Entry<V> e, int unit) {
 		if (e == null)
 			return;
 		int h = height(e, 0);
-		int unit = 6;
-		//int unit = last(n).toString().length() + 2;
 		int broad = (int)Math.pow(2, h-1) * unit;
 		
 		StringBuilder sb = new StringBuilder();
@@ -588,5 +586,4 @@ public class PTreeMap<V> {
 			System.out.println(tree.higherEntry(4));
 		}
 	}
-
 }
