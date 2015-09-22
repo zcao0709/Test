@@ -1,7 +1,5 @@
 package com.alex.test;
 
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Scanner;
 
 public class RedBlackTree {
@@ -173,13 +171,13 @@ public class RedBlackTree {
 		if (node.left != null) {
 			if (node.left.val > node.val)
 				return false;
-			if (!isRoot(node) && isRight(node) && node.left.val < node.parent.val)
+			if (isRight(node) && node.left.val < node.parent.val)
 				return false;
 		}
 		if (node.right != null) {
 			if (node.right.val < node.val)
 				return false;
-			if (!isRoot(node) && isLeft(node) && node.right.val > node.parent.val)
+			if (isLeft(node) && node.right.val > node.parent.val)
 				return false;
 		}
 		if (isValid(node.left) && isValid(node.right))
@@ -198,11 +196,11 @@ public class RedBlackTree {
 	}
 
 	private boolean isLeft(Node node) {
-		return node == node.parent.left;
+		return node != root && node == node.parent.left;
 	}
 
 	private boolean isRight(Node node) {
-		return node == node.parent.right;
+		return node != root && node == node.parent.right;
 	}
 
 	private boolean isRoot(Node node) {
@@ -582,7 +580,12 @@ public class RedBlackTree {
 	private Node lowerNode(int val) {
 		Node p = root;
 		while (p != null) {
-			if (val < p.val) {
+			if (val > p.val) {
+				if (p.right != null)
+					p = p.right;
+				else
+					return p;
+			} else {
 				if (p.left != null)
 					p = p.left;
 				else {
@@ -594,11 +597,6 @@ public class RedBlackTree {
 					}
 					return parent;
 				}
-			} else {
-				if (p.right != null)
-					p = p.right;
-				else
-					return p;
 			}
 		}
 		return null;
@@ -637,7 +635,6 @@ public class RedBlackTree {
 		private Node parent;
 		private Color color;
 		private int bh;
-		//private int layer;
 		private static final int INVALID = -1;
 		
 		public Node(int val, Node left, Node right, Node parent) {
@@ -671,11 +668,12 @@ public class RedBlackTree {
 				rbt.insert(sc.nextInt());
 				rbt.printTree();
 			}
-			/*
+			
 			rbt.delete(2);
 			rbt.printTree();
 			rbt.delete(4);
 			rbt.printTree();
+			/*
 			rbt.traverse();
 			
 			System.out.println(rbt.first());
