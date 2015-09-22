@@ -44,56 +44,44 @@ public class BinIndexTree {
 		return Arrays.toString(bit);
 	}
 	
-	private static class City implements Comparable<City> {
-		int dist;
-		int pop;
-		
-		City(int d) {
-			dist = d;
-			pop = 0;
-		}
-		
-		void setPop(int p) {
-			pop = p;
-		}
-		@Override
-		public int compareTo(City c) {
-			return c.pop - pop;
-		}
-		@Override
-		public String toString() {
-			return dist + "," + pop;
-		}
-	}
-
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
+	private static long maxSum(BinIndexTree bit, long max, long m, int n) {
+        for (int j = 0; j < n; j++) {
+            for (int k = j+1; k < n; k++) {
+                long sum = bit.getSum(k);
+                sum %= m;
+                if (sum > max)
+                    max = sum;
+                if (max == m-1)
+                    return max;
+            }
+            bit.reset(j);
+        }
+        return max;
+    }
+    
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
 		int ncase = sc.nextInt();
 		for (int i = 0; i < ncase; i++) {
-			int ncity = sc.nextInt();
-			List<City> cities = new ArrayList<>(ncity);
-			for (int j = 0; j < ncity; j++)
-				cities.add(new City(sc.nextInt()));
-			for (int j = 0; j < ncity; j++)
-				cities.get(j).setPop(sc.nextInt());
-		
-			Collections.sort(cities);
-			BinIndexTree bit = new BinIndexTree(ncity - 1);
-			for (int j = 0; j < ncity-1; j++) {
-				bit.update(j, (long)cities.get(j+1).dist - cities.get(j).dist);
-			}
-			long sum = 0;
-			for (int j = 0; j < ncity-1; j++) {
-				long subSum = 0;
-				for (int k = j + 1; k < ncity; k++) {
-					subSum += Math.abs(bit.getSum(k-1));
-				}
-				bit.reset(j);
-				sum += subSum * cities.get(j).pop;
-				sum %= 1000000007;
-			}
-			System.out.println(sum);
-		}
-		sc.close();
-	}
+            int n = sc.nextInt();
+            long m = sc.nextLong();
+            BinIndexTree bit = new BinIndexTree(n);
+            long max = 0;
+            for (int j = 0; j < n; j++) {
+                long num = (sc.nextLong() % m);
+                if (num == 0) {
+                    n--;
+                    continue;
+                }
+                if (num > max)
+                    max = num;
+                bit.update(j, num);
+            }
+            if (max != m-1) {
+                max = maxSum(bit, max, m, n);
+            }
+            System.out.println(max);
+        }
+        sc.close();
+    }
 }
