@@ -65,15 +65,17 @@ public class ListGraph {
 		Queue<Vertex> q = new PriorityQueue<>(vs.length, new Comparator<Vertex>() {
 			@Override
 			public int compare(Vertex v1, Vertex v2) {
-				return v2.dist - v1.dist;
+				return v1.dist - v2.dist;
 			}
 		});
 		q.offer(vs[start]);
 		while (q.size() > 0) {
+			System.out.println(q.toString() + q.size());
 			Vertex start = q.poll();
+			System.out.println(start);
+			System.out.println(q);
 			Edge e = start.edges;
 			while (e != null) {
-				//System.out.println(start);
 				//System.out.println(e);
 				Vertex v = e.dest;
 				if (v.dist == -1 || v.dist > start.dist + e.weight) {
@@ -125,7 +127,7 @@ public class ListGraph {
 		}
 		@Override
 		public String toString() {
-			return val + color.toString();
+			return val + color.toString() + dist;
 		}
 	}
 	
