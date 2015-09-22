@@ -7,9 +7,11 @@ import java.util.Scanner;
 public class RedBlackTree {
 
 	private Node root;
+	private int size;
 	
 	public RedBlackTree() {
 		root = null;
+		size = 0;
 	}
 
 	public void printTree() {
@@ -17,85 +19,85 @@ public class RedBlackTree {
 			System.out.println("Null tree");
 			return;
 		}
-		//preorder(root);
-		System.out.println("BH: " + blackHeight(root));
-		printTree(root, height(root));
+		//System.out.println("BH: " + blackHeight(root));
+		printTree(root);
 		System.out.println();
 	}
 
-	private void printTree(Node n, int h) {
+	private void printTree(Node n) {
 		if (n == null)
 			return;
-		Queue<Node> ns = new LinkedList<>();
-		final Node DUMMY = new Node(-1);
-		ns.offer(n);
+		int h = height(n, 0);
+		int unit = last(n).toString().length() + 2;
+		int broad = (int)Math.pow(2, h-1) * unit;
 		
-		int nPerLayer = 1;
-		int maxPerLayer = (int)Math.pow(2, h-1);
-		int unit = last(root).toString().length() + 2;
-		if ((unit & 1) != 0)
-			unit++;
-		
-		for (int j = h; j > 0; j--) {
-			for (int i = 0; i < nPerLayer; i++) {
-				printIndent(nPerLayer, maxPerLayer, unit);
-				Node node = ns.poll();
-				if (node == DUMMY) {
-					printDummy(unit);
-					ns.offer(DUMMY);
-					ns.offer(DUMMY);
-				} else {
-					printNode(node, unit);
-					if (node.left == null)
-						ns.offer(DUMMY);
-					else
-						ns.offer(node.left);
-					if (node.right == null)
-						ns.offer(DUMMY);
-					else
-						ns.offer(node.right);
-				}
-				printIndent(nPerLayer, maxPerLayer, unit);
+		StringBuilder sb = new StringBuilder();
+		Node[] ns = new Node[1];
+		ns[0] = n;
+		for (int j = 1; j <= h; j++) {
+			Node[] next = new Node[ns.length * 2];
+			indent(ns.length, broad, unit, sb);
+			for (int k = 0; k < ns.length; k++) {
+				space(ns.length, broad, unit, sb);
+				if (ns[k] != null) {
+					stringlize(ns[k].toString(), unit, sb);
+					next[2*k] = ns[k].left;
+					next[2*k+1] = ns[k].right;
+				} else
+					stringlize("", unit, sb);
+				space(ns.length, broad, unit, sb);
 			}
-			System.out.println();
-			nPerLayer *= 2;
+			indent(ns.length, broad, unit, sb);
+			sb.append("\n");
+			ns = next;
 		}
+		System.out.println(sb);
 	}
 	
-	private void printIndent(int n, int max, int unit) {
-		for (int i = 0; i < (max*unit/n-unit)/2; i++)
-			System.out.print(" ");
+	private void indent(int n, int broad, int unit, StringBuilder sb) {
+		for (int i = 0; i < (broad%n)/2; i++)
+			sb.append(" ");
+		int space = broad / n - unit;
+		if ((space & 1) != 0)
+			for (int i = 0; i < n / 2; i++)
+				sb.append(" ");
 	}
 	
-	private void printNode(Node n, int unit) {
-		int len = n.toString().length();
+	private void space(int n, int broad, int unit, StringBuilder sb) {
+		int space = broad / n - unit;
+		for (int i = 0; i < space / 2; i++)
+			sb.append(" ");
+	}
+	
+	private void stringlize(String s, int unit, StringBuilder sb) {
+		int len = s.length();
+		if (len == 0) {
+			for (int i = 0; i < unit; i++)
+				sb.append(" ");
+			return;
+		}
 		int pre, post;
 		pre = post = (unit - len) / 2;
-		if ((len & 1) != 0) {
+		if (((unit - len) & 1) != 0) {
 			pre++;
 		}
 		for (int i = 0; i < pre; i++)
-			System.out.print(" ");
-		System.out.print(n);
+			sb.append(" ");
+		sb.append(s);
 		for (int i = 0; i < post; i++)
-			System.out.print(" ");
+			sb.append(" ");
 	}
 	
-	private void printDummy(int unit) {
-		for (int i = 0; i < unit; i++)
-			System.out.print(" ");
+	public int height() {
+		return height(root, 0);
 	}
 	
-	private int height(Node n) {
+	private int height(Node n, int h) {
 		if (n == null)
-			return 0;
-		if (n.parent == null)
-			n.layer = 1;
-		else
-			n.layer = n.parent.layer + 1;
-		int left = height(n.left);
-		int right = height(n.right);
-		return 1 + (left > right ? left : right);
+			return h;
+		int left = height(n.left, h+1);
+		int right = height(n.right, h+1);
+		return left > right ? left : right;
 	}
 	
 	private int blackHeight(Node n) {
@@ -215,11 +217,15 @@ public class RedBlackTree {
 		return !isBlack(node);
 	}
 	
-	public void insert(int val) {
-		insert(new Node(val));
+	public int size() {
+		return size;
 	}
 	
-	private void insert(Node n) {
+	public boolean insert(int val) {
+		return insert(new Node(val));
+	}
+	
+	private boolean insert(Node n) {
 		Node p = null;
 		Node toInsert = root;
 		while (toInsert != null) {
@@ -229,7 +235,7 @@ public class RedBlackTree {
 			else if (toInsert.val < n.val)
 				toInsert = toInsert.right;
 			else
-				return;
+				return false;
 		}
 		n.parent = p;
 		if (p == null) {
@@ -242,6 +248,8 @@ public class RedBlackTree {
 		}
 		n.color = Color.RED;
 		fixInsert(n);
+		size++;
+		return true;
 	}
 	
 	private void fixInsert(Node n) {
@@ -319,7 +327,8 @@ public class RedBlackTree {
 		toDelete.left = null;
 		toDelete.right = null;
 		if (isBlack(toDelete))
-				fixDelete(parent, child);
+			fixDelete(parent, child);
+		size--;
 	}
 	
 	private void fixDelete(Node p, Node n) {
@@ -472,8 +481,15 @@ public class RedBlackTree {
 		return p;
 	}
 	
+	private int keyOrNull(Node n) {
+		if (n == null)
+			return Node.INVALID;
+		return n.val;
+	}
+	
 	public int higher(int val) {
-		Node p = null;
+		return keyOrNull(higherNode(val));
+		/*Node p = null;
 		Node x = root;
 		while (x != null) {
 			if (x.val == val)
@@ -496,7 +512,32 @@ public class RedBlackTree {
 		if (n == null)
 			return Node.INVALID;
 		else
-			return n.val;
+			return n.val;*/
+	}
+	
+	private Node higherNode(int val) {
+		Node p = root;
+		while (p != null) {
+			if (val < p.val) {
+				if (p.left != null)
+					p = p.left;
+				else
+					return p;
+			} else {
+				if (p.right != null)
+					p = p.right;
+				else {
+					Node parent = p.parent;
+					Node child = p;
+					while (parent != null && child == parent.right) {
+						child = parent;
+						parent = parent.parent;
+					}
+					return parent;
+				}
+			}
+		}
+		return null;
 	}
 	
 	private Node higher(Node n) {
@@ -511,7 +552,8 @@ public class RedBlackTree {
 	}
 	
 	public int lower(int val) {
-		Node p = null;
+		return keyOrNull(lowerNode(val));
+		/*Node p = null;
 		Node x = root;
 		while (x != null) {
 			if (x.val == val)
@@ -534,7 +576,32 @@ public class RedBlackTree {
 		if (n == null)
 			return Node.INVALID;
 		else
-			return n.val;
+			return n.val;*/
+	}
+	
+	private Node lowerNode(int val) {
+		Node p = root;
+		while (p != null) {
+			if (val < p.val) {
+				if (p.left != null)
+					p = p.left;
+				else {
+					Node parent = p.parent;
+					Node child = p;
+					while (parent != null && child == parent.left) {
+						child = parent;
+						parent = parent.parent;
+					}
+					return parent;
+				}
+			} else {
+				if (p.right != null)
+					p = p.right;
+				else
+					return p;
+			}
+		}
+		return null;
 	}
 	
 	private Node lower(Node n) {
@@ -570,7 +637,7 @@ public class RedBlackTree {
 		private Node parent;
 		private Color color;
 		private int bh;
-		private int layer;
+		//private int layer;
 		private static final int INVALID = -1;
 		
 		public Node(int val, Node left, Node right, Node parent) {
@@ -580,7 +647,7 @@ public class RedBlackTree {
 			this.parent = parent;
 			this.color = Color.BLACK;
 			this.bh = 0;
-			this.layer = 0;
+			//this.layer = 0;
 		}
 
 		public Node(int val) {
@@ -604,10 +671,11 @@ public class RedBlackTree {
 				rbt.insert(sc.nextInt());
 				rbt.printTree();
 			}
+			/*
 			rbt.delete(2);
 			rbt.printTree();
-			/*rbt.delete(4);
-			rbt.printTree();*/
+			rbt.delete(4);
+			rbt.printTree();
 			rbt.traverse();
 			
 			System.out.println(rbt.first());
@@ -616,7 +684,9 @@ public class RedBlackTree {
 			System.out.println(rbt.lower(9));
 			System.out.println(rbt.higher(9));
 			System.out.println(rbt.higher(4));
+			System.out.println(rbt.size());
 			rbt.printTree();
+			*/
 		}
 	}
 }
