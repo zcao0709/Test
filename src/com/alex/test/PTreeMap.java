@@ -5,6 +5,7 @@ import java.util.Scanner;
 
 public class PTreeMap<V> {
 	
+	private static final int INVALID_KEY = -1;
 	private Entry<V> root;
 	private int size;
 	
@@ -102,6 +103,113 @@ public class PTreeMap<V> {
 		return left > right ? left : right;
 	}
 	
+	public int size() {
+		return size;
+	}
+	
+	public int firstKey() {
+		Entry<V> e = getFirstEntry();
+		return e == null ? INVALID_KEY : e.key;
+	}
+	
+	public MapEntry<V> firstEntry() {
+		Entry<V> e = getFirstEntry();
+		return e == null ? e : new ImmutableEntry<V>(e);
+	}
+	
+	public int lastKey() {
+		Entry<V> e = getLastEntry();
+		return e == null ? INVALID_KEY : e.key;
+	}
+	
+	public MapEntry<V> lastEntry() {
+		Entry<V> e = getLastEntry();
+		return e == null ? e : new ImmutableEntry<V>(e);
+	}
+	
+	private Entry<V> getFirstEntry() {
+		Entry<V> e = root;
+		if (e != null)
+			while (e.left != null)
+				e = e.left;
+		return e;
+	}
+	
+	private Entry<V> getLastEntry() {
+		Entry<V> e = root;
+		while (e.right != null)
+			e = e.right;
+		return e;
+	}
+	
+	public int higherKey(int k) {
+		Entry<V> e = getHigherEntry(k);
+		return e == null ? INVALID_KEY : e.key;
+	}
+	
+	public MapEntry<V> higherEntry(int k) {
+		Entry<V> e = getHigherEntry(k);
+		return e == null ? e : new ImmutableEntry<V>(e);
+	}
+	
+	public int lowerKey(int k) {
+		Entry<V> e = getLowerEntry(k);
+		return e == null ? INVALID_KEY : e.key;
+	}
+	
+	public MapEntry<V> lowerEntry(int k) {
+		Entry<V> e = getLowerEntry(k);
+		return e == null ? e : new ImmutableEntry<V>(e);
+	}
+	
+	private Entry<V> getHigherEntry(int k) {
+		Entry<V> e = root;
+		while (e != null) {
+			if (k < e.key) {
+				if (e.left != null)
+					e = e.left;
+				else
+					return e;
+			} else {
+				if (e.right != null)
+					e = e.right;
+				else {
+					Entry<V> p = e.parent;
+					while (p != null && p.right == e) {
+						e = p;
+						p = p.parent;
+					}
+					return p;
+				}
+			}
+		}
+		return null;
+	}
+	
+	private Entry<V> getLowerEntry(int k) {
+		Entry<V> e = root;
+		while (e != null) {
+			if (k > e.key) {
+				if (e.right != null)
+					e = e.right;
+				else
+					return e;
+			} else {
+				if (e.left != null)
+					e = e.left;
+				else {
+					Entry<V> p = e.parent;
+					while (p != null && p.left == e) {
+						e = p;
+						p = p.parent;
+					}
+					return p;
+				}
+			}
+		}
+		return null;
+	}
+	
 	public V get(int key) {
 		Entry<V> e = root;
 		while (e != null) {
@@ -156,23 +264,33 @@ public class PTreeMap<V> {
 		return old;
 	}
 	
-	private Entry<V> getEntry(int key) {
-		Entry<V> e = root;
-		while (e != null) {
-			if (key < e.key)
-				e = e.left;
-			else if (key > e.key)
-				e = e.right;
-			else
-				return e;
-		}
-		return null;
-	}
-	
 	private void remove(Entry<V> e) {
-		
+		Entry<V> x;
+		if (e.left == null || e.right == null)
+			x = e;
+		else
+			x = successor(e);
+		Entry<V> c = x.left != null ? x.left : x.right;
+		Entry<V> p = x.parent;
+		if (c != null)
+			c.parent = p;
+		if (p == null) {
+			root = c;
+		} else {
+			if (p.left == x)
+				p.left = c;
+			else
+				p.right = c;
+		}
+		if (x != e) {
+			e.key = x.key;
+			e.val = x.val;
+		}
+		if (isBlack(x))
+			fixRemove(p, c);
+		size--;
 	}
-	
+
 	private void fixPut(Entry<V> e) {
 		while (isRed(e.parent)) {
 			Entry<V> g = e.parent.parent;
@@ -209,6 +327,65 @@ public class PTreeMap<V> {
 			}
 		}
 		root.color = Color.BLACK;
+	}
+	
+	private void fixRemove(Entry<V> p, Entry<V> c) {
+		while (c != root && isBlack(c)) {
+			if (c == p.left) {
+				Entry<V> s = p.right;
+				if (isRed(s)) {
+					s.color = Color.BLACK;
+					p.color = Color.RED;
+					leftRotate(p);
+					s = p.right;
+				}
+				if (isBlack(s.left) && isBlack(s.right)) {
+					s.color = Color.RED;
+					c = p;
+					if (p != null)
+						p = p.parent;
+				} else {
+					if (isBlack(s.right)) {
+						s.left.color = Color.BLACK;
+						s.color = Color.RED;
+						rightRotate(s);
+						s = p.right;
+					}
+					s.right.color = Color.BLACK;
+					s.color = p.color;
+					p.color = Color.BLACK;
+					leftRotate(p);
+					c = root;
+				}
+			} else {
+				Entry<V> s = p.left;
+				if (isRed(s)) {
+					s.color = Color.BLACK;
+					p.color = Color.RED;
+					rightRotate(p);
+					s = p.left;
+				}
+				if (isBlack(s.left) && isBlack(s.right)) {
+					s.color = Color.RED;
+					c = p;
+					if (p != null)
+						p = p.parent;
+				} else {
+					if (isBlack(s.left)) {
+						s.right.color = Color.BLACK;
+						s.color = Color.RED;
+						leftRotate(s);
+						s = p.left;
+					}
+					s.left.color = Color.BLACK;
+					s.color = p.color;
+					p.color = Color.BLACK;
+					rightRotate(p);
+					c = root;
+				}
+			}
+		}
+		c.color = Color.BLACK;
 	}
 	
 	private void leftRotate(Entry<V> e) {
@@ -253,6 +430,35 @@ public class PTreeMap<V> {
 		}
 	}
 	
+	private Entry<V> getEntry(int key) {
+		Entry<V> e = root;
+		while (e != null) {
+			if (key < e.key)
+				e = e.left;
+			else if (key > e.key)
+				e = e.right;
+			else
+				return e;
+		}
+		return null;
+	}
+	
+	private Entry<V> successor(Entry<V> e) {
+		if (e.right != null) {
+			e = e.right;
+			while (e.left != null) {
+				e = e.left;
+			}
+			return e;
+		}
+		Entry<V> p = e.parent;
+		while (p != null && e == p.right) {
+			e = p;
+			p = p.parent;
+		}
+		return p;
+	}
+	
 	private boolean isRed(Entry<V> e) {
 		return (e != null && e.color == Color.RED);
 	}
@@ -276,8 +482,9 @@ public class PTreeMap<V> {
 		}
 	}
 	
-	private static class Entry<V> implements Comparable<Entry<V>> {
-		final int key;
+	private static class Entry<V> 
+		implements Comparable<Entry<V>>, MapEntry<V> {
+		int key;
 		V val;
 		Entry<V> left;
 		Entry<V> right;
@@ -291,6 +498,23 @@ public class PTreeMap<V> {
 		}
 		
 		@Override
+		public int getKey() {
+			return key;
+		}
+		
+		@Override
+		public V getValue() {
+			return val;
+		}
+		
+		@Override
+		public V setValue(V v) {
+			V old = val;
+			val = v;
+			return old;
+		}
+		
+		@Override
 		public int compareTo(Entry<V> e) {
 			return key - e.key;
 		}
@@ -298,6 +522,36 @@ public class PTreeMap<V> {
 		@Override
 		public String toString() {
 			return key + "," + val + color;
+		}
+	}
+	
+	public static class ImmutableEntry<V> implements MapEntry<V> {
+		final int key;
+		final V val;
+		
+		ImmutableEntry(MapEntry<V> entry) {
+			key = entry.getKey();
+			val = entry.getValue();
+		}
+		
+		@Override
+		public int getKey() {
+			return key;
+		}
+		
+		@Override
+		public V getValue() {
+			return val;
+		}
+		
+		@Override
+		public V setValue(V v) {
+			throw new IllegalArgumentException();
+		}
+		
+		@Override
+		public String toString() {
+			return key + "," + val;
 		}
 	}
 	
@@ -314,6 +568,24 @@ public class PTreeMap<V> {
 				tree.printTree();
 			}
 			System.out.println(tree.get(14));
+			tree.remove(2);
+			tree.printTree();
+			tree.remove(4);
+			tree.printTree();
+			
+			System.out.println(tree.firstKey());
+			System.out.println(tree.lastKey());
+			System.out.println(tree.lowerKey(6));
+			System.out.println(tree.lowerKey(9));
+			System.out.println(tree.higherKey(9));
+			System.out.println(tree.higherKey(4));
+			
+			System.out.println(tree.firstEntry());
+			System.out.println(tree.lastEntry());
+			System.out.println(tree.lowerEntry(6));
+			System.out.println(tree.lowerEntry(9));
+			System.out.println(tree.higherEntry(9));
+			System.out.println(tree.higherEntry(4));
 		}
 	}
 
