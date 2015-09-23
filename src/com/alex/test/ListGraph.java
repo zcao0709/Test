@@ -62,18 +62,28 @@ public class ListGraph {
 	}
 	
 	public void dijkstra() {
-		Queue<Vertex> q = new PriorityQueue<>(vs.length, new Comparator<Vertex>() {
+		PHeap<Vertex> heap = new PHeap<>(vs.length, new Comparator<Vertex>() {
 			@Override
 			public int compare(Vertex v1, Vertex v2) {
-				return v1.dist - v2.dist;
+				if (v1.dist == -1 && v2.dist == -1)
+					return 0;
+				else if (v1.dist == -1)
+					return 1;
+				else if (v2.dist == -1)
+					return -1;
+				else
+					return v1.dist - v2.dist;
 			}
 		});
-		q.offer(vs[start]);
-		while (q.size() > 0) {
-			System.out.println(q.toString() + q.size());
-			Vertex start = q.poll();
-			System.out.println(start);
-			System.out.println(q);
+		for (Vertex v : vs)
+			heap.offer(v);
+		while (heap.size() > 0) {
+			//System.out.println(heap.toString());
+			Vertex start = heap.poll();
+			if (start.dist == -1)
+				break;
+			//System.out.println(start);
+			//System.out.println(heap);
 			Edge e = start.edges;
 			while (e != null) {
 				//System.out.println(e);
@@ -81,10 +91,11 @@ public class ListGraph {
 				if (v.dist == -1 || v.dist > start.dist + e.weight) {
 					v.dist = start.dist + e.weight;
 					v.pred = start;
-					q.offer(v);
+					//heap.offer(v);
 				}
 				e = e.next;
 			}
+			heap.heapify();
 		}
 	}
 	
@@ -125,6 +136,7 @@ public class ListGraph {
 			pred = null;
 			edges = null;
 		}
+		
 		@Override
 		public String toString() {
 			return val + color.toString() + dist;
