@@ -39,7 +39,7 @@ public class ListGraph {
 	// only for fixed weight
 	public void bfs() {
 		Queue<Vertex> q = new LinkedList<>();
-		vs[start].color = Color.BLACK;
+		vs[start].color = Color.GREY;
 		q.offer(vs[start]);
 		
 		while (q.size() > 0) {
@@ -49,31 +49,39 @@ public class ListGraph {
 				//System.out.println(e);
 				Vertex v = e.dest;
 				if (v.color == Color.WHILTE) {
-					v.color = Color.BLACK;
-					v.dist = start.dist + e.weight;
+					v.color = Color.GREY;
+					v.pred = start;
 					q.offer(v);
-				} else {
-					if (v.dist > start.dist + e.weight)
-						v.dist = start.dist + e.weight;
 				}
 				e = e.next;
 			}
+			start.color = Color.BLACK;
 		}
 	}
 	
 	public void dijkstra() {
-		Queue<Vertex> q = new PriorityQueue<>(vs.length, new Comparator<Vertex>() {
+		PHeap<Vertex> heap = new PHeap<>(vs.length, new Comparator<Vertex>() {
 			@Override
 			public int compare(Vertex v1, Vertex v2) {
-				return v1.dist - v2.dist;
+				if (v1.dist == -1 && v2.dist == -1)
+					return 0;
+				else if (v1.dist == -1)
+					return 1;
+				else if (v2.dist == -1)
+					return -1;
+				else
+					return v1.dist - v2.dist;
 			}
 		});
-		q.offer(vs[start]);
-		while (q.size() > 0) {
-			System.out.println(q.toString() + q.size());
-			Vertex start = q.poll();
-			System.out.println(start);
-			System.out.println(q);
+		for (Vertex v : vs)
+			heap.offer(v);
+		while (heap.size() > 0) {
+			//System.out.println(heap.toString());
+			Vertex start = heap.poll();
+			if (start.dist == -1)
+				break;
+			//System.out.println(start);
+			//System.out.println(heap);
 			Edge e = start.edges;
 			while (e != null) {
 				//System.out.println(e);
@@ -81,14 +89,35 @@ public class ListGraph {
 				if (v.dist == -1 || v.dist > start.dist + e.weight) {
 					v.dist = start.dist + e.weight;
 					v.pred = start;
-					q.offer(v);
+					//heap.offer(v);
 				}
 				e = e.next;
 			}
+			heap.heapify();
 		}
 	}
 	
 	public void printPath() {
+		for (Vertex v : vs) {
+			printPath(v);
+			System.out.println();
+		}
+	}
+	
+	private void printPath(Vertex v) {
+		if (v == vs[start])
+			System.out.print(v + " ");
+		else {
+			if (v.pred == null)
+				System.out.print("no path from " + vs[start] + " to " + v);
+			else {
+				printPath(v.pred);
+				System.out.print(v + " ");
+			}
+		}
+	}
+	
+	public void printDist() {
 		for (int i = 0; i < vs.length; i++) {
 			if (i == start)
 				continue;
@@ -98,7 +127,7 @@ public class ListGraph {
 	}
 	
 	private static enum Color {
-		WHILTE("w"), BLACK("b");
+		WHILTE("w"), BLACK("b"), GREY("g");
 		
 		private String c;
 		
@@ -125,9 +154,11 @@ public class ListGraph {
 			pred = null;
 			edges = null;
 		}
+		
 		@Override
 		public String toString() {
-			return val + color.toString() + dist;
+			//return val + color.toString() + dist;
+			return String.valueOf(val);
 		}
 	}
 	
@@ -162,7 +193,7 @@ public class ListGraph {
 			for (int j = 0; j < e; j++)
 				g.addEdge(sc.nextInt(), sc.nextInt(), sc.nextInt());
 			g.setStart(sc.nextInt());
-			g.dijkstra();
+			g.bfs();
 			g.printPath();
 		}
 		sc.close();
