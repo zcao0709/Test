@@ -39,7 +39,7 @@ public class ListGraph {
 	// only for fixed weight
 	public void bfs() {
 		Queue<Vertex> q = new LinkedList<>();
-		vs[start].color = Color.BLACK;
+		vs[start].color = Color.GREY;
 		q.offer(vs[start]);
 		
 		while (q.size() > 0) {
@@ -49,15 +49,16 @@ public class ListGraph {
 				//System.out.println(e);
 				Vertex v = e.dest;
 				if (v.color == Color.WHILTE) {
-					v.color = Color.BLACK;
-					v.dist = start.dist + e.weight;
+					v.color = Color.GREY;
+					v.pred = start;
 					q.offer(v);
-				} else {
-					if (v.dist > start.dist + e.weight)
-						v.dist = start.dist + e.weight;
+				//} else {
+					//if (v.dist > start.dist + e.weight)
+						//v.dist = start.dist + e.weight;
 				}
 				e = e.next;
 			}
+			start.color = Color.BLACK;
 		}
 	}
 	
@@ -109,7 +110,7 @@ public class ListGraph {
 	}
 	
 	private static enum Color {
-		WHILTE("w"), BLACK("b");
+		WHILTE("w"), BLACK("b"), GREY("g");
 		
 		private String c;
 		
