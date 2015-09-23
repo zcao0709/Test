@@ -101,6 +101,26 @@ public class ListGraph {
 	}
 	
 	public void printPath() {
+		for (Vertex v : vs) {
+			printPath(v);
+			System.out.println();
+		}
+	}
+	
+	private void printPath(Vertex v) {
+		if (v == vs[start])
+			System.out.print(v + " ");
+		else {
+			if (v.pred == null)
+				System.out.print("no path from " + vs[start] + " to " + v);
+			else {
+				printPath(v.pred);
+				System.out.print(v + " ");
+			}
+		}
+	}
+	
+	public void printDist() {
 		for (int i = 0; i < vs.length; i++) {
 			if (i == start)
 				continue;
@@ -140,7 +160,8 @@ public class ListGraph {
 		
 		@Override
 		public String toString() {
-			return val + color.toString() + dist;
+			//return val + color.toString() + dist;
+			return String.valueOf(val);
 		}
 	}
 	
@@ -175,7 +196,7 @@ public class ListGraph {
 			for (int j = 0; j < e; j++)
 				g.addEdge(sc.nextInt(), sc.nextInt(), sc.nextInt());
 			g.setStart(sc.nextInt());
-			g.dijkstra();
+			g.bfs();
 			g.printPath();
 		}
 		sc.close();
