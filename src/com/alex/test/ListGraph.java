@@ -52,9 +52,6 @@ public class ListGraph {
 					v.color = Color.GREY;
 					v.pred = start;
 					q.offer(v);
-				//} else {
-					//if (v.dist > start.dist + e.weight)
-						//v.dist = start.dist + e.weight;
 				}
 				e = e.next;
 			}
