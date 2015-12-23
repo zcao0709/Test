@@ -1,11 +1,14 @@
 package com.alex.test;
 
 import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Test {
 
 	public Test() {
-		
+		System.out.println("Test");
 	}
 	
 	public Test(Test t) {
@@ -39,11 +42,21 @@ public class Test {
 		}
 		System.out.println(Arrays.toString(a));
 		System.out.println(countRunAndMakeAscending(a, 0, a.length));
-		System.out.println(Arrays.toString(a));*/
+		System.out.println(Arrays.toString(a));
 		Test t = new Test();
 		System.out.println(t.a);
-		System.out.println(t.b);
-		
+		System.out.println(t.b);*/
+		//MakeTest t = () -> System.out.println("do test");
+		//t.dotest();
+		List<String> test = Arrays.asList("hello", "world", "haha");
+		System.out.println(test.stream()
+								.filter(str -> str.matches("h.*"))
+								.collect(Collectors.toList()));
+		System.out.println(Stream.of("hello", "world", "haha").filter(str -> str.matches("h.*")).collect(Collectors.toList()));
+	}
+	
+	private interface MakeTest {
+		void dotest();
 	}
 	
     public static int roundUpToPowerOf2(int number) {
