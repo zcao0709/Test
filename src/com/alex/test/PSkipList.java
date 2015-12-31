@@ -1,9 +1,12 @@
 package com.alex.test;
 
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+
 public class PSkipList {
 	
 	private static final Object BASE_HEADER = new Object();
-	private final Header head;
+	private Header head;
 	private int size;
 	
 	public PSkipList() {
@@ -11,8 +14,49 @@ public class PSkipList {
 		size = 0;
 	}
 	
+	private Node findPredecessor(Node node) {
+		for (Index i = head, r = i.right, d = null; ;) {
+			if (r != null) {
+				Node n = r.node;
+				if (n.key < node.key) {
+					i = r;
+					r = i.right;
+					continue;
+				}
+			}
+			d = i.down;
+			if (d == null)
+				return i.node;
+			i = d;
+			r = i.right;
+		}
+	}
+	
 	public void add(int key) {
 		Node n = new Node(key, null);
+		Node pre = findPredecessor(n);
+		n.next = pre.next;
+		pre.next = n;
+		
+		int rnd = new Random().nextInt();
+        if ((rnd & 0x80000001) == 0) {
+            int level = 1;
+            while (((rnd >>>= 1) & 1) != 0)
+                ++level;
+            Index i = null;
+            if (level < head.level) {
+            	for (int j = 1; j <= level; j++)
+            		i = new Index(n, null, i);
+            } else {
+            	level = head.level + 1;
+            	for (int j = 1; j <= level; j++)
+            		i = new Index(n, null, i);
+            	for (int j = head.level + 1; j <= level; j++) {
+            		head = new Header(head.node, null, head, j);
+            	}
+            }
+            
+        }
 	}
 	
 	public boolean remove(int key) {
