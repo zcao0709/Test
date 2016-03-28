@@ -1,11 +1,39 @@
 package com.alex.test;
 
-import java.util.*;
-import java.util.concurrent.Executors;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class Test {
+	
+	static class Artist {
+		public String getName() {
+			Lock lock = new ReentrantLock();
+			return name;
+		}
+		public void setName(String name) {
+			this.name = name;
+		}
+		public String getNation() {
+			return nation;
+		}
+		public void setNation(String nation) {
+			this.nation = nation;
+		}
+		public Artist(String name, String nation) {
+			super();
+			this.name = name;
+			this.nation = nation;
+		}
+		String name;
+		String nation;
+	}
 
 	public Test() {
 		System.out.println("Test");
@@ -21,10 +49,49 @@ public class Test {
 	private int a;
 	protected int b;
 	
+	public static int addUp(Stream<Integer> number) {
+		/*
+		BinaryOperator<Integer> adder = new BinaryOperator<Integer>() {
+			@Override
+			public Integer apply(Integer x, Integer y) {
+				return x + y;
+			}
+		};
+		return number.reduce(0, adder);
+		*/ 
+		return number.reduce(0, (acc, element) -> acc + element);
+	}
+	
+	public static List<String> nameNation(List<Artist> artists) {
+		
+		Function<Artist, Stream<String>> func = new Function<Artist, Stream<String>>() {
+			@Override
+			public Stream<String> apply(Artist s) {
+				return Stream.of(s.getName(), s.getNation());
+			}
+		};
+		
+		return artists.stream()
+					  //.flatMap(artist -> Stream.of(artist.getName(), artist.getNation()))
+					  .flatMap(func)
+					  .collect(Collectors.toList());
+	}
+	
 	public static void main(String[] args) {
+		String test = "TestÎÒµÄJava";
+		System.out.println(test + ", " + test.length());
+		for (int i = 0; i < test.length(); i++) {
+			System.out.println(test.charAt(i));
+		}
 		/*List<Integer> list = new ArrayList<>(10);
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 4; i++)
 			list.add(i);
+		System.out.println(Test.addUp(list.stream()));
+		List<Artist> artists = new ArrayList<>(5);
+		artists.add(new Artist("zhangsan", "China"));
+		artists.add(new Artist("Lisi", "USA"));
+		System.out.println(Test.nameNation(artists));*/
+		/*
 		List<Integer> listToPrint = new ArrayList<>();
 		printFull(listToPrint, list);
 		int i = 21;
@@ -48,11 +115,12 @@ public class Test {
 		System.out.println(t.b);*/
 		//MakeTest t = () -> System.out.println("do test");
 		//t.dotest();
-		List<String> test = Arrays.asList("hello", "world", "haha");
-		System.out.println(test.stream()
+		//List<String> test = Arrays.asList("hello", "world", "haha");
+		/*System.out.println(test.stream()
 								.filter(str -> str.matches("h.*"))
 								.collect(Collectors.toList()));
 		System.out.println(Stream.of("hello", "world", "haha").filter(str -> str.matches("h.*")).collect(Collectors.toList()));
+		*/
 	}
 	
 	private interface MakeTest {

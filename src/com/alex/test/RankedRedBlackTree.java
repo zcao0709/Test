@@ -1,8 +1,12 @@
 package com.alex.test;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Scanner;
+import java.util.Set;
+
+import javax.net.ssl.HandshakeCompletedEvent;
 
 public class RankedRedBlackTree {
 
@@ -551,6 +555,40 @@ public class RankedRedBlackTree {
 		}
 		return p;
 	}
+	
+	public int findLCS(int[] values) {
+		Set<Node> nodes = new HashSet<>();
+		for (int i : values) {
+			nodes.add(find(i));
+		}
+		if (nodes.contains(root))
+			return root.val;
+		Node d1 = findLCS(nodes, root, root.left);
+		Node d2 = findLCS(nodes, root, root.right);
+		if (d1 == null && d2 == null)
+			throw new IllegalArgumentException();
+		else if (d1 == null)
+			return d2.val;
+		else if (d2 == null)
+			return d1.val;
+		else
+			return root.val;
+	}
+	
+	private Node findLCS(Set<Node> nodes, Node parent, Node child) {
+		if (child == null)
+			return null;
+		if (nodes.contains(child))
+			return child;
+		Node d1 = findLCS(nodes, child, child.left);
+		Node d2 = findLCS(nodes, child, child.right);
+		if (d1 == null)
+			return d2;
+		else if (d2 == null)
+			return d1;
+		else 
+			return child;
+	}
 
 	private static enum Color {
 		RED("r"), BLACK("b");
@@ -595,6 +633,19 @@ public class RankedRedBlackTree {
 		public String toString() {
 			return val + color.toString() + size;
 		}
+		
+		@Override
+		public int hashCode() {
+			return val;
+		}
+		
+		@Override
+		public boolean equals(Object obj) {
+			if (obj instanceof Node) {
+	            return val == ((Node)obj).val;
+	        }
+	        return false;
+		}
 	}
 
 	//9
@@ -608,21 +659,24 @@ public class RankedRedBlackTree {
 				rbt.insert(sc.nextInt());
 				rbt.printTree();
 			}
+			int[] values = new int[] {5, 1, 8};
+			System.out.println(rbt.findLCS(values));
+			/*
 			System.out.println(rbt.rank(1));
 			System.out.println(rbt.rank(7));
 			System.out.println(rbt.rank(11));
-			/*rbt.delete(7);
+			rbt.delete(7);
 			rbt.printTree();
 			rbt.delete(4);
 			rbt.printTree();*/
 			
-			System.out.println(rbt.first());
+			/*System.out.println(rbt.first());
 			System.out.println(rbt.last());
 			System.out.println(rbt.lower(6));
 			System.out.println(rbt.lower(9));
 			System.out.println(rbt.higher(9));
 			System.out.println(rbt.higher(4));
-			rbt.printTree();
+			rbt.printTree();*/
 		}
 	}
 }

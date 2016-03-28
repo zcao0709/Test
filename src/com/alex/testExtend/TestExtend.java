@@ -18,7 +18,6 @@ public class TestExtend extends Test {
 		//TestExtend.Nested.makeNestedTest();
 		Nested n = te.new Nested();
 		n.makeNestedTest();
-		Executors
 	}
 	
 	public void makeTest(Test t) {
