@@ -1,10 +1,6 @@
 package com.alex.test;
 
-import java.util.Queue;
 import java.util.Scanner;
-import java.util.function.IntPredicate;
-
-import javax.naming.ldap.SortControl;
 
 public class TopologSort {
 	
