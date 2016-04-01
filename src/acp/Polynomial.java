@@ -245,7 +245,7 @@ x2-2xy+y2
 			System.out.println(p);
 			System.out.println(q);
 			
-			q.multiply(p);
+			q.add(q);
 			System.out.println(q);
 			
 		}
