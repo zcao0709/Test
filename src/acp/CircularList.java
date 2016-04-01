@@ -45,6 +45,8 @@ public class CircularList<E> {
 		return p;
 	}
 	
+	// add item q before item p by exchanging q's data with p's, then adding
+	// q after p, so not necessary to trace item before p.
 	public void add(int index, E data) {
 		Item<E> p = find(index);
 		E tmp = p.data;
@@ -55,10 +57,10 @@ public class CircularList<E> {
 		p.next = q;
 	}
 	
+	// remove item p by copying whole item p.next to p and removing item p.next,
+	// so not necessary to trace item before p.
 	public E delete(int index) {
-		Item<E> p = find(index);
-		// remove item p by copy whole item p.next to p and remove item p.next
-		// so not necessary to trace Item before p.
+		Item<E> p = find(index);		
 		E data = p.data;
 		Item<E> q = p.next;
 		p.data = q.data;
