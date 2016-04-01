@@ -36,12 +36,12 @@ public class CircularList<E> {
 	private Item<E> find(int index) {
 		int i = 0;
 		Item<E> p = ptr.next;
-		while (i != index && p != ptr) {
+		// this is circular, so we don't check 
+		// if index is out of range
+		while (i != index) {
 			i++;
 			p = p.next;
 		}
-		if (i != index)
-			throw new IllegalArgumentException();
 		return p;
 	}
 	
@@ -120,7 +120,10 @@ public class CircularList<E> {
 			return data.toString();
 		}
 	}
-
+/*
+6
+1 2 3 4 5 6
+ */
 	public static void main(String[] args) {
 		try (Scanner sc = new Scanner(System.in)) {
 			int n = sc.nextInt();
@@ -129,9 +132,11 @@ public class CircularList<E> {
 			for (; i < n/2; i++) {
 				cl.addLeft(sc.nextInt());
 			}
+			System.out.println(cl);
 			for (; i < n; i++) {
 				//cl.addRight(sc.nextInt());
-				cl.add(1, sc.nextInt());
+				cl.add(i, sc.nextInt());
+				System.out.println(cl);
 			}
 			System.out.println(cl);
 			System.out.println(cl.delete(1));
